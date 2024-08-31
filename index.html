@@ -34,9 +34,8 @@
     </div>
 
     <script>
-        // Combined media list (input as a space-separated list)
-        const mediaList = `
-        https://imagizer.imageshack.com/v2/240x172q70/c/r/924/uLSNeg.png
+        // Combined media list (input as a space-separated list or newline-separated list)
+        const mediaList = `https://imagizer.imageshack.com/v2/240x172q70/c/r/924/uLSNeg.png
         https://imagizer.imageshack.com/v2/240x226q70/c/r/923/Lex1aI.png
         https://imagizer.imageshack.com/v2/240x229q70/c/r/923/Lvay55.png
         https://imagizer.imageshack.com/v2/240x240q70/c/r/922/YNgYoq.png
@@ -102,12 +101,14 @@
 
         // Add media to the page based on its type
         mediaArray.forEach(media => {
-            const type = getMediaType(media);
+            const trimmedMedia = media.trim();
+            const type = getMediaType(trimmedMedia);
             if (type !== 'unknown') {
-                addMediaElement(type, media.trim());
+                addMediaElement(type, trimmedMedia);
             }
         });
     </script>
 </body>
 </html>
+
 
