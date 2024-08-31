@@ -24,6 +24,12 @@
             height: auto;
             margin-bottom: 10px;
         }
+        iframe {
+            width: 300px;
+            height: 200px;
+            margin-bottom: 10px;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +68,8 @@
                 return 'video';
             } else if (['mp3', 'wav', 'ogg', 'aac', 'flac'].includes(extension)) {
                 return 'audio';
+            } else if (url.includes('mega.nz')) {
+                return 'mega';
             } else {
                 return 'unknown';
             }
@@ -91,6 +99,9 @@
                 source.src = src;
                 source.type = `audio/${src.split('.').pop()}`;
                 element.appendChild(source);
+            } else if (type === 'mega') {
+                element = document.createElement('iframe');
+                element.src = src; // Replace with a proper embed link if available
             }
 
             if (element) {
@@ -110,5 +121,6 @@
     </script>
 </body>
 </html>
+
 
 
