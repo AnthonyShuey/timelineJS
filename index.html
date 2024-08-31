@@ -34,11 +34,29 @@
     </div>
 
     <script>
-        // Example media addresses (replace with your actual media addresses)
-        const photo1 = "https://imagizer.imageshack.com/v2/967x544q70/r/922/sKn9s5.png";  // Add image address or leave as empty string if none
-        
+        // Combined media list (input as a space-separated list)
+        const mediaList = `
+        https://imagizer.imageshack.com/v2/240x172q70/c/r/924/uLSNeg.png
+        https://imagizer.imageshack.com/v2/240x226q70/c/r/923/Lex1aI.png`;
+
+        // Split input strings into an array
+        const mediaArray = mediaList.trim().split(/\s+/);
 
         const mediaContainer = document.getElementById('media-container');
+
+        // Function to determine media type based on file extension
+        function getMediaType(url) {
+            const extension = url.split('.').pop().toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
+                return 'img';
+            } else if (['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(extension)) {
+                return 'video';
+            } else if (['mp3', 'wav', 'ogg', 'aac', 'flac'].includes(extension)) {
+                return 'audio';
+            } else {
+                return 'unknown';
+            }
+        }
 
         // Function to add media elements to the page
         function addMediaElement(type, src, alt = '') {
@@ -55,37 +73,31 @@
                 element.controls = true;
                 const source = document.createElement('source');
                 source.src = src;
-                source.type = 'video/mp4';
+                source.type = `video/${src.split('.').pop()}`;
                 element.appendChild(source);
             } else if (type === 'audio') {
                 element = document.createElement('audio');
                 element.controls = true;
                 const source = document.createElement('source');
                 source.src = src;
-                source.type = 'audio/mpeg';
+                source.type = `audio/${src.split('.').pop()}`;
                 element.appendChild(source);
             }
 
-            div.appendChild(element);
-            mediaContainer.appendChild(div);
+            if (element) {
+                div.appendChild(element);
+                mediaContainer.appendChild(div);
+            }
         }
 
-        // Conditionally add photos
-        if (photo1) addMediaElement('img', photo1, 'Photo 1');
-        if (photo2) addMediaElement('img', photo2, 'Photo 2');
-
-        // Conditionally add videos
-        if (video1) addMediaElement('video', video1);
-        if (video2) addMediaElement('video', video2);
-
-        // Conditionally add audios
-        if (audio1) addMediaElement('audio', audio1);
-        if (audio2) addMediaElement('audio', audio2);
+        // Add media to the page based on its type
+        mediaArray.forEach(media => {
+            const type = getMediaType(media);
+            if (type !== 'unknown') {
+                addMediaElement(type, media.trim());
+            }
+        });
     </script>
-</body>
-</html>
-
-    </div>
 </body>
 </html>
 
