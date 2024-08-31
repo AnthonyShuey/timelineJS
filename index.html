@@ -29,42 +29,62 @@
 <body>
     <h1>My Media Gallery</h1>
 
-    <div class="media-container">
-        <!-- Add your photo addresses here -->
-        <div class="media-item">
-            <img src="https://imagizer.imageshack.com/v2/967x544q70/r/922/sKn9s5.png" alt="Photo 1">
-        </div>
-        <div class="media-item">
-            <img src="https://your-image-host.com/path/to/image2.jpg" alt="Photo 2">
-        </div>
+    <div class="media-container" id="media-container">
+        <!-- Media items will be dynamically inserted here -->
+    </div>
 
-        <!-- Add your video addresses here -->
-        <div class="media-item">
-            <video controls>
-                <source src="https://your-video-host.com/path/to/video1.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-        <div class="media-item">
-            <video controls>
-                <source src="https://your-video-host.com/path/to/video2.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+    <script>
+        // Example media addresses (replace with your actual media addresses)
+        const photo1 = "https://imagizer.imageshack.com/v2/967x544q70/r/922/sKn9s5.png";  // Add image address or leave as empty string if none
+        
 
-        <!-- Add your audio addresses here -->
-        <div class="media-item">
-            <audio controls>
-                <source src="https://your-audio-host.com/path/to/audio1.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-        <div class="media-item">
-            <audio controls>
-                <source src="https://your-audio-host.com/path/to/audio2.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
+        const mediaContainer = document.getElementById('media-container');
+
+        // Function to add media elements to the page
+        function addMediaElement(type, src, alt = '') {
+            const div = document.createElement('div');
+            div.className = 'media-item';
+            let element;
+
+            if (type === 'img') {
+                element = document.createElement('img');
+                element.src = src;
+                element.alt = alt;
+            } else if (type === 'video') {
+                element = document.createElement('video');
+                element.controls = true;
+                const source = document.createElement('source');
+                source.src = src;
+                source.type = 'video/mp4';
+                element.appendChild(source);
+            } else if (type === 'audio') {
+                element = document.createElement('audio');
+                element.controls = true;
+                const source = document.createElement('source');
+                source.src = src;
+                source.type = 'audio/mpeg';
+                element.appendChild(source);
+            }
+
+            div.appendChild(element);
+            mediaContainer.appendChild(div);
+        }
+
+        // Conditionally add photos
+        if (photo1) addMediaElement('img', photo1, 'Photo 1');
+        if (photo2) addMediaElement('img', photo2, 'Photo 2');
+
+        // Conditionally add videos
+        if (video1) addMediaElement('video', video1);
+        if (video2) addMediaElement('video', video2);
+
+        // Conditionally add audios
+        if (audio1) addMediaElement('audio', audio1);
+        if (audio2) addMediaElement('audio', audio2);
+    </script>
+</body>
+</html>
+
     </div>
 </body>
 </html>
