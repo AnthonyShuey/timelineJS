@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beautiful Media Gallery Timeline</title>
+    <title>TimelineJS</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f5;
+            background-color: #d3d3d3; /* Lighter gray background */
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         h1 {
@@ -70,19 +72,59 @@
             max-height: 200px;
         }
 
+        /* Side decorations */
+        .side-decor {
+            position: fixed;
+            top: 0;
+            width: 50px;
+            height: 100%;
+            background-size: contain;
+            background-repeat: repeat-y;
+            z-index: -1; /* Behind the main content */
+        }
+
+        .left-side {
+            left: 0;
+            background-image: url('baseball.png'); /* Placeholder for baseball image */
+        }
+
+        .right-side {
+            right: 0;
+            background-image: url('bu-logo.png'); /* Placeholder for Boston University logo */
+        }
+
+        .top-side {
+            top: 0;
+            height: 50px;
+            width: 100%;
+            left: 50px;
+            right: 50px;
+            background-image: url('lgbt-flag.png'); /* Placeholder for LGBT flag image */
+            background-repeat: repeat-x;
+        }
+
         @media (max-width: 768px) {
             .media-container {
                 flex-direction: column;
                 align-items: center;
             }
+
             .media-item {
                 max-width: 90%;
+            }
+
+            .side-decor {
+                display: none; /* Hide side decorations on small screens */
             }
         }
     </style>
 </head>
 <body>
-    <h1>My Beautiful Media Gallery</h1>
+    <div class="side-decor left-side"></div>
+    <div class="side-decor right-side"></div>
+    <div class="side-decor top-side"></div>
+
+    <h1>TimelineJS</h1>
 
     <div class="media-container" id="media-container">
         <!-- Media items will be dynamically inserted here -->
@@ -164,3 +206,4 @@
     </script>
 </body>
 </html>
+
