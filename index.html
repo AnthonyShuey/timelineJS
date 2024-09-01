@@ -91,6 +91,7 @@
             } else if (type === 'video') {
                 element = document.createElement('video');
                 element.controls = true;
+                element.setAttribute('controlsList', 'nofullscreen nodownload noremoteplayback'); // Optional: Restrict fullscreen
                 const source = document.createElement('source');
                 source.src = src;
                 source.type = `video/${src.split('.').pop()}`;
@@ -105,7 +106,8 @@
             } else if (type === 'iframe') {
                 element = document.createElement('iframe');
                 element.src = src.replace('/view?usp=drive_link', '/preview');
-                element.allow = 'autoplay';
+                element.allow = 'autoplay; fullscreen';
+                element.allowFullscreen = true;  // This is crucial for enabling fullscreen
             }
 
             if (element) {
@@ -125,4 +127,5 @@
     </script>
 </body>
 </html>
+
 
