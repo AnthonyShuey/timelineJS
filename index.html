@@ -18,8 +18,13 @@
         }
         .media-item {
             max-width: 300px;
+            text-align: center;
         }
-        img, video, audio {
+        .media-item-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        img, video, audio, iframe {
             max-width: 100%;
             height: auto;
             margin-bottom: 10px;
@@ -43,14 +48,14 @@
         // Combined media list (input as a space-separated list or newline-separated list)
         const mediaList = `https://drive.google.com/file/d/1ANmyBQrbAVS5MdVGmxBiarQL-KY_ft9_/view?usp=drive_link
         https://drive.google.com/file/d/1y0R09bbuuq8Ju4lyre_FM156lZ7RPF7b/view?usp=drive_link
-        https://drive.google.com/file/d/1Qr65Af-WOPksZLBl2Y-GGiLJ9HzJN9vI/view?usp=drive_link`; // Example .mov file
+        https://drive.google.com/file/d/1Qr65Af-WOPksZLBl2Y-GGiLJ9HzJN9vI/view?usp=drive_link`;
 
         // Split input strings into an array
         const mediaArray = mediaList.trim().split(/\s+/);
 
         const mediaContainer = document.getElementById('media-container');
 
-        // Function to determine media type based on file extension or URL
+        // Function to determine media type based on file extension
         function getMediaType(url) {
             const extension = url.split('.').pop().toLowerCase();
             if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
@@ -60,25 +65,23 @@
             } else if (['mp3', 'wav', 'ogg', 'aac', 'flac'].includes(extension)) {
                 return 'audio';
             } else if (url.includes('drive.google.com')) {
-                return 'google-drive';
+                return 'iframe';
             } else {
                 return 'unknown';
             }
         }
 
-        // Function to convert Google Drive URLs to embed format
-        function convertGoogleDriveURL(url) {
-            const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (fileIdMatch) {
-                return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
-            }
-            return url;
-        }
-
         // Function to add media elements to the page
-        function addMediaElement(type, src, alt = '') {
+        function addMediaElement(type, src, alt = '', number) {
             const div = document.createElement('div');
             div.className = 'media-item';
+
+            // Add number label
+            const numberLabel = document.createElement('div');
+            numberLabel.className = 'media-item-number';
+            numberLabel.textContent = `Media ${number}`;
+            div.appendChild(numberLabel);
+
             let element;
 
             if (type === 'img') {
@@ -99,11 +102,9 @@
                 source.src = src;
                 source.type = `audio/${src.split('.').pop()}`;
                 element.appendChild(source);
-            } else if (type === 'google-drive') {
+            } else if (type === 'iframe') {
                 element = document.createElement('iframe');
-                element.src = convertGoogleDriveURL(src);
-                element.width = '640';
-                element.height = '480';
+                element.src = src.replace('/view?usp=drive_link', '/preview');
                 element.allow = 'autoplay';
             }
 
@@ -114,15 +115,14 @@
         }
 
         // Add media to the page based on its type
-        mediaArray.forEach(media => {
+        mediaArray.forEach((media, index) => {
             const trimmedMedia = media.trim();
             const type = getMediaType(trimmedMedia);
             if (type !== 'unknown') {
-                addMediaElement(type, trimmedMedia);
+                addMediaElement(type, trimmedMedia, '', index + 1);
             }
         });
     </script>
 </body>
 </html>
-
 
