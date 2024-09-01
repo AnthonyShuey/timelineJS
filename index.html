@@ -3,129 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Media Gallery</title>
+    <title>Comprehensive Photo Album</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        .media-container {
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+            margin: 0;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .photo-album-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin: 20px;
+            gap: 15px;
+            padding: 20px;
         }
-        .media-item {
-            max-width: 300px;
+
+        .photo-item {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
             text-align: center;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .media-item-number {
-            font-weight: bold;
-            margin-bottom: 5px;
+
+        .photo-item:hover .photo-caption {
+            opacity: 1;
         }
-        img, video, audio, iframe {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
+
+        @media (max-width: 768px) {
+            .photo-item {
+                width: 45%;
+                height: auto;
+            }
         }
-        iframe {
-            width: 300px;
-            height: 200px;
-            margin-bottom: 10px;
-            border: none;
+
+        @media (max-width: 480px) {
+            .photo-item {
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>My Media Gallery</h1>
 
-    <div class="media-container" id="media-container">
-        <!-- Media items will be dynamically inserted here -->
+    <h1>My Timeline Photo Album</h1>
+
+    <div class="photo-album-container">
+        <!-- Example Photos -->
+        <div class="photo-item">
+            <img src="https://via.placeholder.com/280x180" alt="Photo 1">
+            <div class="photo-caption">Event 1: Description of the event...</div>
+        </div>
+        <div class="photo-item">
+            <img src="https://via.placeholder.com/280x180" alt="Photo 2">
+            <div class="photo-caption">Event 2: Description of the event...</div>
+        </div>
+        <div class="photo-item">
+            <img src="https://via.placeholder.com/280x180" alt="Photo 3">
+            <div class="photo-caption">Event 3: Description of the event...</div>
+        </div>
+        <!-- Add more photos as needed -->
     </div>
 
     <script>
-        // Combined media list (input as a space-separated list or newline-separated list)
-        const mediaList = `https://drive.google.com/file/d/1ANmyBQrbAVS5MdVGmxBiarQL-KY_ft9_/view?usp=drive_link
-        https://drive.google.com/file/d/1y0R09bbuuq8Ju4lyre_FM156lZ7RPF7b/view?usp=drive_link
-        https://drive.google.com/file/d/1Qr65Af-WOPksZLBl2Y-GGiLJ9HzJN9vI/view?usp=drive_link`;
+        // JavaScript can dynamically populate the album from an array if needed
+        const photos = [
+            { src: 'https://via.placeholder.com/280x180', caption: 'Event 1: Description of the event...' },
+            { src: 'https://via.placeholder.com/280x180', caption: 'Event 2: Description of the event...' },
+            { src: 'https://via.placeholder.com/280x180', caption: 'Event 3: Description of the event...' }
+            // Add more photo objects as needed
+        ];
 
-        // Split input strings into an array
-        const mediaArray = mediaList.trim().split(/\s+/);
+        const photoAlbumContainer = document.querySelector('.photo-album-container');
 
-        const mediaContainer = document.getElementById('media-container');
+        photos.forEach(photo => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
 
-        // Function to determine media type based on file extension
-        function getMediaType(url) {
-            const extension = url.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
-                return 'img';
-            } else if (['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(extension)) {
-                return 'video';
-            } else if (['mp3', 'wav', 'ogg', 'aac', 'flac'].includes(extension)) {
-                return 'audio';
-            } else if (url.includes('drive.google.com')) {
-                return 'iframe';
-            } else {
-                return 'unknown';
-            }
-        }
+            const img = document.createElement('img');
+            img.src = photo.src;
+            img.alt = photo.caption;
 
-        // Function to add media elements to the page
-        function addMediaElement(type, src, alt = '', number) {
-            const div = document.createElement('div');
-            div.className = 'media-item';
+            const caption = document.createElement('div');
+            caption.className = 'photo-caption';
+            caption.textContent = photo.caption;
 
-            // Add number label
-            const numberLabel = document.createElement('div');
-            numberLabel.className = 'media-item-number';
-            numberLabel.textContent = `Media ${number}`;
-            div.appendChild(numberLabel);
-
-            let element;
-
-            if (type === 'img') {
-                element = document.createElement('img');
-                element.src = src;
-                element.alt = alt;
-            } else if (type === 'video') {
-                element = document.createElement('video');
-                element.controls = true;
-                element.setAttribute('controlsList', 'nofullscreen nodownload noremoteplayback'); // Optional: Restrict fullscreen
-                const source = document.createElement('source');
-                source.src = src;
-                source.type = `video/${src.split('.').pop()}`;
-                element.appendChild(source);
-            } else if (type === 'audio') {
-                element = document.createElement('audio');
-                element.controls = true;
-                const source = document.createElement('source');
-                source.src = src;
-                source.type = `audio/${src.split('.').pop()}`;
-                element.appendChild(source);
-            } else if (type === 'iframe') {
-                element = document.createElement('iframe');
-                element.src = src.replace('/view?usp=drive_link', '/preview');
-                element.allow = 'autoplay; fullscreen';
-                element.allowFullscreen = true;  // This is crucial for enabling fullscreen
-            }
-
-            if (element) {
-                div.appendChild(element);
-                mediaContainer.appendChild(div);
-            }
-        }
-
-        // Add media to the page based on its type
-        mediaArray.forEach((media, index) => {
-            const trimmedMedia = media.trim();
-            const type = getMediaType(trimmedMedia);
-            if (type !== 'unknown') {
-                addMediaElement(type, trimmedMedia, '', index + 1);
-            }
+            photoItem.appendChild(img);
+            photoItem.appendChild(caption);
+            photoAlbumContainer.appendChild(photoItem);
         });
     </script>
 </body>
 </html>
+
 
 
