@@ -3,207 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimelineJS</title>
+    <title>Image Carousel with Full-Screen View</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #d3d3d3; /* Lighter gray background */
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-        }
-
-        h1 {
-            color: #333;
-            margin-top: 20px;
-        }
-
-        .media-container {
-            display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
-            padding: 20px;
-            width: 100%;
-            max-width: 1200px;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
 
-        .media-item {
-            background-color: white;
+        .carousel-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 300px;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .media-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        .carousel-slide {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
         }
 
-        .media-item-number {
-            background-color: #007bff;
+        .carousel-slide img {
+            width: 100%;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .prev-btn, .next-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
-            padding: 5px 0;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        img, video, audio, iframe {
-            max-width: 100%;
-            display: block;
-            margin: 0 auto;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-
-        video, audio {
-            outline: none;
-            max-height: 200px;
-        }
-
-        iframe {
             border: none;
-            max-height: 200px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
         }
 
-        /* Side decorations */
-        .side-decor {
+        .prev-btn {
+            left: 10px;
+        }
+
+        .next-btn {
+            right: 10px;
+        }
+
+        .prev-btn:hover, .next-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
-            width: 50px;
-            height: 100%;
-            background-size: contain;
-            background-repeat: repeat-y;
-            z-index: -1; /* Behind the main content */
-        }
-
-        .left-side {
             left: 0;
-            background-image: url('baseball.png'); /* Placeholder for baseball image */
-        }
-
-        .right-side {
-            right: 0;
-            background-image: url('bu-logo.png'); /* Placeholder for Boston University logo */
-        }
-
-        .top-side {
-            top: 0;
-            height: 50px;
             width: 100%;
-            left: 50px;
-            right: 50px;
-            background-image: url('lgbt-flag.png'); /* Placeholder for LGBT flag image */
-            background-repeat: repeat-x;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        @media (max-width: 768px) {
-            .media-container {
-                flex-direction: column;
-                align-items: center;
-            }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
 
-            .media-item {
-                max-width: 90%;
-            }
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
 
-            .side-decor {
-                display: none; /* Hide side decorations on small screens */
-            }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="side-decor left-side"></div>
-    <div class="side-decor right-side"></div>
-    <div class="side-decor top-side"></div>
+    <div class="carousel-container">
+        <div class="carousel-slide">
+            <!-- Add your image URLs below -->
+            <img src="https://imageshack.com/i/pnXhKxAPp" alt="Image 1">
+            <img src="https://imageshack.com/i/pnPo22ckp" alt="Image 2">
+            <img src="https://imageshack.com/i/pm29UfrVp" alt="Image 3">
+        </div>
+        <button class="prev-btn" onclick="moveSlide(-1)">❮</button>
+        <button class="next-btn" onclick="moveSlide(1)">❯</button>
+    </div>
 
-    <h1>TimelineJS</h1>
-
-    <div class="media-container" id="media-container">
-        <!-- Media items will be dynamically inserted here -->
+    <!-- Full-Screen Modal -->
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">✖</button>
+        <div class="modal-content">
+            <img id="modal-image" src="" alt="Full-Screen Image">
+        </div>
     </div>
 
     <script>
-        const mediaList = `https://drive.google.com/file/d/1ANmyBQrbAVS5MdVGmxBiarQL-KY_ft9_/view?usp=drive_link
-        https://drive.google.com/file/d/1y0R09bbuuq8Ju4lyre_FM156lZ7RPF7b/view?usp=drive_link
-        https://drive.google.com/file/d/1Qr65Af-WOPksZLBl2Y-GGiLJ9HzJN9vI/view?usp=drive_link`;
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide img');
+        const totalSlides = slides.length;
+        const modal = document.getElementById('modal');
+        const modalImage = document.getElementById('modal-image');
 
-        const mediaArray = mediaList.trim().split(/\s+/);
-        const mediaContainer = document.getElementById('media-container');
-
-        function getMediaType(url) {
-            const extension = url.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
-                return 'img';
-            } else if (['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(extension)) {
-                return 'video';
-            } else if (['mp3', 'wav', 'ogg', 'aac', 'flac'].includes(extension)) {
-                return 'audio';
-            } else if (url.includes('drive.google.com')) {
-                return 'iframe';
-            } else {
-                return 'unknown';
+        function moveSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide >= totalSlides) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = totalSlides - 1;
             }
+            updateSlidePosition();
         }
 
-        function addMediaElement(type, src, alt = '', number) {
-            const div = document.createElement('div');
-            div.className = 'media-item';
-
-            const numberLabel = document.createElement('div');
-            numberLabel.className = 'media-item-number';
-            numberLabel.textContent = `Media ${number}`;
-            div.appendChild(numberLabel);
-
-            let element;
-
-            if (type === 'img') {
-                element = document.createElement('img');
-                element.src = src;
-                element.alt = alt;
-            } else if (type === 'video') {
-                element = document.createElement('video');
-                element.controls = true;
-                element.setAttribute('controlsList', 'nofullscreen nodownload noremoteplayback');
-                const source = document.createElement('source');
-                source.src = src;
-                source.type = `video/${src.split('.').pop()}`;
-                element.appendChild(source);
-            } else if (type === 'audio') {
-                element = document.createElement('audio');
-                element.controls = true;
-                const source = document.createElement('source');
-                source.src = src;
-                source.type = `audio/${src.split('.').pop()}`;
-                element.appendChild(source);
-            } else if (type === 'iframe') {
-                element = document.createElement('iframe');
-                element.src = src.replace('/view?usp=drive_link', '/preview');
-                element.allow = 'autoplay; fullscreen';
-                element.allowFullscreen = true;
-            }
-
-            if (element) {
-                div.appendChild(element);
-                mediaContainer.appendChild(div);
-            }
+        function updateSlidePosition() {
+            const slideWidth = slides[0].clientWidth;
+            document.querySelector('.carousel-slide').style.transform = `translateX(${-slideWidth * currentSlide}px)`;
         }
 
-        mediaArray.forEach((media, index) => {
-            const trimmedMedia = media.trim();
-            const type = getMediaType(trimmedMedia);
-            if (type !== 'unknown') {
-                addMediaElement(type, trimmedMedia, '', index + 1);
-            }
+        function openModal(src) {
+            modal.style.display = 'flex';
+            modalImage.src = src;
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        slides.forEach(slide => {
+            slide.addEventListener('click', () => openModal(slide.src));
         });
+
+        window.addEventListener('resize', updateSlidePosition);
     </script>
 </body>
 </html>
-
