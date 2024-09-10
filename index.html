@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Carousel with Full-Screen View</title>
+    <title>Media Carousel with Full-Screen View</title>
     <style>
         body {
             margin: 0;
@@ -29,10 +29,14 @@
             transition: transform 0.5s ease-in-out;
         }
 
-        .carousel-slide img {
+        .carousel-slide img, .carousel-slide video {
             width: 100%;
             cursor: pointer;
             border-radius: 10px;
+        }
+
+        .carousel-slide audio {
+            width: 100%;
         }
 
         .prev-btn, .next-btn {
@@ -77,10 +81,14 @@
             max-height: 90%;
         }
 
-        .modal-content img {
+        .modal-content img, .modal-content video {
             width: 100%;
             height: auto;
             border-radius: 10px;
+        }
+
+        .modal-content audio {
+            width: 100%;
         }
 
         .modal-close {
@@ -98,10 +106,18 @@
 <body>
     <div class="carousel-container">
         <div class="carousel-slide">
-            <!-- Add your image URLs below -->
+            <!-- Add your media URLs below -->
             <img src="https://imageshack.com/i/pnXhKxAPp" alt="Image 1">
             <img src="https://imageshack.com/i/pnPo22ckp" alt="Image 2">
             <img src="https://imageshack.com/i/pm29UfrVp" alt="Image 3">
+            <video controls>
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <audio controls>
+                <source src="audio.mp3" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
         </div>
         <button class="prev-btn" onclick="moveSlide(-1)">❮</button>
         <button class="next-btn" onclick="moveSlide(1)">❯</button>
@@ -111,16 +127,27 @@
     <div class="modal" id="modal">
         <button class="modal-close" onclick="closeModal()">✖</button>
         <div class="modal-content">
-            <img id="modal-image" src="" alt="Full-Screen Image">
+            <!-- Placeholder for dynamic media content -->
+            <img id="modal-image" src="" alt="Full-Screen Image" style="display: none;">
+            <video id="modal-video" controls style="display: none;">
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <audio id="modal-audio" controls style="display: none;">
+                <source src="" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
         </div>
     </div>
 
     <script>
         let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide img');
+        const slides = document.querySelectorAll('.carousel-slide img, .carousel-slide video, .carousel-slide audio');
         const totalSlides = slides.length;
         const modal = document.getElementById('modal');
         const modalImage = document.getElementById('modal-image');
+        const modalVideo = document.getElementById('modal-video');
+        const modalAudio = document.getElementById('modal-audio');
 
         function moveSlide(direction) {
             currentSlide += direction;
@@ -137,9 +164,24 @@
             document.querySelector('.carousel-slide').style.transform = `translateX(${-slideWidth * currentSlide}px)`;
         }
 
-        function openModal(src) {
+        function openModal(src, type) {
             modal.style.display = 'flex';
-            modalImage.src = src;
+            if (type === 'image') {
+                modalImage.src = src;
+                modalImage.style.display = 'block';
+                modalVideo.style.display = 'none';
+                modalAudio.style.display = 'none';
+            } else if (type === 'video') {
+                modalVideo.src = src;
+                modalVideo.style.display = 'block';
+                modalImage.style.display = 'none';
+                modalAudio.style.display = 'none';
+            } else if (type === 'audio') {
+                modalAudio.src = src;
+                modalAudio.style.display = 'block';
+                modalImage.style.display = 'none';
+                modalVideo.style.display = 'none';
+            }
         }
 
         function closeModal() {
@@ -147,7 +189,11 @@
         }
 
         slides.forEach(slide => {
-            slide.addEventListener('click', () => openModal(slide.src));
+            slide.addEventListener('click', () => {
+                const type = slide.tagName.toLowerCase();
+                const src = type === 'img' ? slide.src : type === 'video' ? slide.querySelector('source').src : slide.querySelector('source').src;
+                openModal(src, type);
+            });
         });
 
         window.addEventListener('resize', updateSlidePosition);
