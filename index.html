@@ -3,200 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Carousel with Full-Screen View</title>
+    <title>Dynamic Media Carousel for TimelineJS</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .carousel-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-
-        .carousel-container {
-            position: relative;
             width: 80%;
             max-width: 800px;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
         }
-
         .carousel-slide {
             display: flex;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .carousel-slide img, .carousel-slide video {
-            width: 100%;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-
-        .carousel-slide audio {
+            overflow: hidden;
             width: 100%;
         }
-
-        .prev-btn, .next-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 50%;
+        .carousel-slide div {
+            min-width: 100%;
+            transition: 0.5s ease-in-out;
+            text-align: center;
         }
-
-        .prev-btn {
-            left: 10px;
+        img, video, audio {
+            max-width: 100%;
+            max-height: 400px;
         }
-
-        .next-btn {
-            right: 10px;
-        }
-
-        .prev-btn:hover, .next-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .controls {
+            display: flex;
+            justify-content: space-between;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .modal-content img, .modal-content video {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        .modal-content audio {
-            width: 100%;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 30px;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            border: none;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="carousel-container">
-        <div class="carousel-slide">
-            <!-- Add your media URLs below -->
-            <img src="https://imageshack.com/i/pnXhKxAPp" alt="Image 1">
-            <img src="https://imageshack.com/i/pnPo22ckp" alt="Image 2">
-            <img src="https://imageshack.com/i/pm29UfrVp" alt="Image 3">
-            <video controls>
-                <source src="video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <audio controls>
-                <source src="audio.mp3" type="audio/mp3">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-        <button class="prev-btn" onclick="moveSlide(-1)">❮</button>
-        <button class="next-btn" onclick="moveSlide(1)">❯</button>
-    </div>
 
-    <!-- Full-Screen Modal -->
-    <div class="modal" id="modal">
-        <button class="modal-close" onclick="closeModal()">✖</button>
-        <div class="modal-content">
-            <!-- Placeholder for dynamic media content -->
-            <img id="modal-image" src="" alt="Full-Screen Image" style="display: none;">
-            <video id="modal-video" controls style="display: none;">
-                <source src="" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <audio id="modal-audio" controls style="display: none;">
-                <source src="" type="audio/mp3">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-    </div>
+<h1>Dynamic Media Carousel</h1>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide img, .carousel-slide video, .carousel-slide audio');
-        const totalSlides = slides.length;
-        const modal = document.getElementById('modal');
-        const modalImage = document.getElementById('modal-image');
-        const modalVideo = document.getElementById('modal-video');
-        const modalAudio = document.getElementById('modal-audio');
+<!-- Carousel Section -->
+<div class="carousel-container" id="carousel-container" style="display: none;">
+    <div class="carousel-slide" id="carousel-slide"></div>
+</div>
 
-        function moveSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide >= totalSlides) {
-                currentSlide = 0;
-            } else if (currentSlide < 0) {
-                currentSlide = totalSlides - 1;
+<div class="controls" id="carousel-controls" style="display: none;">
+    <button onclick="moveSlide(-1)">❮ Previous</button>
+    <button onclick="moveSlide(1)">Next ❯</button>
+</div>
+
+<script>
+    let mediaArray = [
+        "https://example.com/image1.jpg",  // Media 1
+        "https://example.com/audio1.mp3",  // Media 2
+        "https://example.com/video1.mp4",  // Media 3
+        "https://example.com/image2.jpg",  // Media 4
+        "https://example.com/audio2.mp3",  // Media 5
+        "https://example.com/video2.mp4",  // Media 6
+        "https://example.com/image3.jpg",  // Media 7
+        "https://example.com/audio3.mp3",  // Media 8
+        // Add more media URLs here
+    ];
+
+    let currentSlide = 0;
+
+    // Function to get URL query parameters
+    function getQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const mediaParam = urlParams.get('media');
+        return mediaParam ? mediaParam.split(',').map(num => parseInt(num.trim()) - 1) : [];
+    }
+
+    // Function to create a carousel based on selected media numbers
+    function createCarousel() {
+        const selectedMedia = getQueryParams();
+        const carouselSlide = document.getElementById('carousel-slide');
+        carouselSlide.innerHTML = '';  // Clear existing carousel
+
+        if (selectedMedia.length === 0) {
+            alert('No media selected! Please provide media numbers in the URL.');
+            return;
+        }
+
+        selectedMedia.forEach(index => {
+            if (mediaArray[index]) {
+                const mediaDiv = document.createElement('div');
+                const mediaUrl = mediaArray[index];
+                
+                if (mediaUrl.endsWith('.jpg') || mediaUrl.endsWith('.png') || mediaUrl.endsWith('.jpeg')) {
+                    mediaDiv.innerHTML = `<img src="${mediaUrl}" alt="Media Image">`;
+                } else if (mediaUrl.endsWith('.mp3') || mediaUrl.endsWith('.wav')) {
+                    mediaDiv.innerHTML = `<audio controls><source src="${mediaUrl}" type="audio/mpeg"></audio>`;
+                } else if (mediaUrl.endsWith('.mp4') || mediaUrl.endsWith('.webm')) {
+                    mediaDiv.innerHTML = `<video controls><source src="${mediaUrl}" type="video/mp4"></video>`;
+                }
+                carouselSlide.appendChild(mediaDiv);
             }
-            updateSlidePosition();
-        }
-
-        function updateSlidePosition() {
-            const slideWidth = slides[0].clientWidth;
-            document.querySelector('.carousel-slide').style.transform = `translateX(${-slideWidth * currentSlide}px)`;
-        }
-
-        function openModal(src, type) {
-            modal.style.display = 'flex';
-            if (type === 'image') {
-                modalImage.src = src;
-                modalImage.style.display = 'block';
-                modalVideo.style.display = 'none';
-                modalAudio.style.display = 'none';
-            } else if (type === 'video') {
-                modalVideo.src = src;
-                modalVideo.style.display = 'block';
-                modalImage.style.display = 'none';
-                modalAudio.style.display = 'none';
-            } else if (type === 'audio') {
-                modalAudio.src = src;
-                modalAudio.style.display = 'block';
-                modalImage.style.display = 'none';
-                modalVideo.style.display = 'none';
-            }
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
-        slides.forEach(slide => {
-            slide.addEventListener('click', () => {
-                const type = slide.tagName.toLowerCase();
-                const src = type === 'img' ? slide.src : type === 'video' ? slide.querySelector('source').src : slide.querySelector('source').src;
-                openModal(src, type);
-            });
         });
 
-        window.addEventListener('resize', updateSlidePosition);
-    </script>
+        document.getElementById('carousel-container').style.display = 'flex';
+        document.getElementById('carousel-controls').style.display = 'flex';
+        currentSlide = 0;
+        updateSlidePosition();
+    }
+
+    // Function to move the carousel
+    function moveSlide(direction) {
+        const totalSlides = document.querySelectorAll('.carousel-slide div').length;
+        currentSlide += direction;
+        if (currentSlide >= totalSlides) {
+            currentSlide = 0;
+        } else if (currentSlide < 0) {
+            currentSlide = totalSlides - 1;
+        }
+        updateSlidePosition();
+    }
+
+    // Function to update the carousel position
+    function updateSlidePosition() {
+        const slideWidth = document.querySelector('.carousel-slide div').clientWidth;
+        document.querySelector('.carousel-slide').style.transform = `translateX(${-slideWidth * currentSlide}px)`;
+    }
+
+    // Initialize carousel when the page loads
+    window.onload = createCarousel;
+</script>
+
 </body>
 </html>
+
