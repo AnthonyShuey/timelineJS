@@ -3,126 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Media Carousel for TimelineJS</title>
+    <title>Media Carousel</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .carousel-container {
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 80%;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .media-container {
             max-width: 800px;
-            margin: auto;
-        }
-        .carousel-slide {
-            display: flex;
-            overflow: hidden;
             width: 100%;
-        }
-        .carousel-slide div {
-            min-width: 100%;
-            transition: 0.5s ease-in-out;
             text-align: center;
         }
+
         img, video, audio {
-            max-width: 100%;
-            max-height: 400px;
-        }
-        .controls {
-            display: flex;
-            justify-content: space-between;
             width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        video, audio {
+            controls: true;
         }
     </style>
 </head>
 <body>
+    <div class="media-container">
+        <div id="media-content"></div>
+    </div>
 
-<h1>Dynamic Media Carousel</h1>
+    <script>
+        const mediaArray = [
+            // Add your media URLs here (images, videos, audios)
+            "https://imagizer.imageshack.com/v2/240x229q70/c/r/922/29UfrV.png", // Image 1
+            "https://www.w3schools.com/html/mov_bbb.mp4", // Video
+            "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"  // Audio
+        ];
 
-<!-- Carousel Section -->
-<div class="carousel-container" id="carousel-container" style="display: none;">
-    <div class="carousel-slide" id="carousel-slide"></div>
-</div>
-
-<div class="controls" id="carousel-controls" style="display: none;">
-    <button onclick="moveSlide(-1)">❮ Previous</button>
-    <button onclick="moveSlide(1)">Next ❯</button>
-</div>
-
-<script>
-    // Define mediaArray where URLs can be added over time
-    let mediaArray = [
-        "https://imagizer.imageshack.com/v2/240x181q70/c/r/923/Po22ck.png",
-        "https://imagizer.imageshack.com/v2/240x229q70/c/r/922/29UfrV.png"
-        
-    ];
-
-    // Function to get URL query parameters
-    function getQueryParams() {
         const urlParams = new URLSearchParams(window.location.search);
-        const mediaParam = urlParams.get('media');
-        return mediaParam ? mediaParam.split(',').map(num => parseInt(num.trim()) - 1) : [];
-    }
+        const mediaIndices = urlParams.get('media').split(',');
 
-    // Function to create a carousel based on selected media numbers
-    function createCarousel() {
-        const selectedMedia = getQueryParams();
-        const carouselSlide = document.getElementById('carousel-slide');
-        carouselSlide.innerHTML = '';  // Clear existing carousel
+        const mediaContent = document.getElementById('media-content');
 
-        if (selectedMedia.length === 0) {
-            alert('No media selected! Please provide media numbers in the URL.');
-            return;
-        }
+        mediaIndices.forEach(index => {
+            const mediaUrl = mediaArray[parseInt(index.trim()) - 1];
 
-        selectedMedia.forEach(index => {
-            if (mediaArray[index]) {
-                const mediaDiv = document.createElement('div');
-                const mediaUrl = mediaArray[index];
-                
-                if (mediaUrl.endsWith('.jpg') || mediaUrl.endsWith('.png') || mediaUrl.endsWith('.jpeg')) {
-                    mediaDiv.innerHTML = `<img src="${mediaUrl}" alt="Media Image">`;
-                } else if (mediaUrl.endsWith('.mp3') || mediaUrl.endsWith('.wav')) {
-                    mediaDiv.innerHTML = `<audio controls><source src="${mediaUrl}" type="audio/mpeg"></audio>`;
-                } else if (mediaUrl.endsWith('.mp4') || mediaUrl.endsWith('.webm')) {
-                    mediaDiv.innerHTML = `<video controls><source src="${mediaUrl}" type="video/mp4"></video>`;
-                }
-                carouselSlide.appendChild(mediaDiv);
+            if (mediaUrl.endsWith('.png') || mediaUrl.endsWith('.jpg') || mediaUrl.endsWith('.jpeg') || mediaUrl.endsWith('.gif')) {
+                const img = document.createElement('img');
+                img.src = mediaUrl;
+                mediaContent.appendChild(img);
+            } else if (mediaUrl.endsWith('.mp4') || mediaUrl.endsWith('.webm')) {
+                const video = document.createElement('video');
+                video.src = mediaUrl;
+                video.controls = true;
+                mediaContent.appendChild(video);
+            } else if (mediaUrl.endsWith('.mp3') || mediaUrl.endsWith('.ogg')) {
+                const audio = document.createElement('audio');
+                audio.src = mediaUrl;
+                audio.controls = true;
+                mediaContent.appendChild(audio);
             }
         });
-
-        document.getElementById('carousel-container').style.display = 'flex';
-        document.getElementById('carousel-controls').style.display = 'flex';
-        currentSlide = 0;
-        updateSlidePosition();
-    }
-
-    // Function to move the carousel
-    function moveSlide(direction) {
-        const totalSlides = document.querySelectorAll('.carousel-slide div').length;
-        currentSlide += direction;
-        if (currentSlide >= totalSlides) {
-            currentSlide = 0;
-        } else if (currentSlide < 0) {
-            currentSlide = totalSlides - 1;
-        }
-        updateSlidePosition();
-    }
-
-    // Function to update the carousel position
-    function updateSlidePosition() {
-        const slideWidth = document.querySelector('.carousel-slide div').clientWidth;
-        document.querySelector('.carousel-slide').style.transform = `translateX(${-slideWidth * currentSlide}px)`;
-    }
-
-    // Initialize carousel when the page loads
-    window.onload = createCarousel;
-</script>
-
+    </script>
 </body>
 </html>
+
 
 
